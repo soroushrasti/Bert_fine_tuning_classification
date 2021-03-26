@@ -3,17 +3,6 @@
 # 1. Setup
 
 import tensorflow as tf
-
-# Get the GPU device name.
-device_name = tf.test.gpu_device_name()
-
-# The device name should look like the following:
-if device_name == '/device:GPU:0':
-    print('Found GPU at: {}'.format(device_name))
-else:
-    raise SystemError('GPU device not found')
-
-
 import torch
 
 if torch.cuda.is_available():    
@@ -240,6 +229,7 @@ import datetime
 def format_time(elapsed):
     
     #Takes a time in seconds and returns a string hh:mm:ss
+    
     # Round to the nearest second.
     elapsed_rounded = int(round((elapsed)))
     
