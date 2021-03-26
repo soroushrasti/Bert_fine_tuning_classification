@@ -1,7 +1,6 @@
 
 
 # 1. Setup
-# 1.1. Using Colab GPU for Training
 
 import tensorflow as tf
 
@@ -17,7 +16,6 @@ else:
 
 import torch
 
-# If there's a GPU available...
 if torch.cuda.is_available():    
 
     # Tell PyTorch to use the GPU.    
@@ -27,45 +25,26 @@ if torch.cuda.is_available():
 
     print('We will use the GPU:', torch.cuda.get_device_name(0))
 
-# If not...
 else:
-    print('No GPU available, using the CPU instead.')
     device = torch.device("cpu")
 
 
-import wget
-import os
-
-print('Downloading dataset...')
-
-# The URL for the dataset zip file.
-url = 'https://nyu-mll.github.io/CoLA/cola_public_1.1.zip'
-
-# Download the file (if we haven't already)
-if not os.path.exists('./cola_public_1.1.zip'):
-    wget.download(url, './cola_public_1.1.zip')
-
-
-# Unzip the dataset (if we haven't already)
-if not os.path.exists('./cola_public/'):
-    !unzip cola_public_1.1.zip
 
 # 2.2. Parse
 
 import pandas as pd
 
 # Load the dataset into a pandas dataframe.
-df = pd.read_csv("./cola_public/raw/in_domain_train.tsv", delimiter='\t', header=None, names=['sentence_source', 'label', 'label_notes', 'sentence'])
+df = pd.read_csv("./train.tsv", delimiter='\t', header=None, names=['sentence_source', 'label', 'label_notes', 'sentence'])
 
 # Report the number of sentences.
 print('Number of training sentences: {:,}\n'.format(df.shape[0]))
 
 # Display 10 random rows from the data.
-df.sample(10)
+print(df.sample(10))
 
 
-
-df.loc[df.label == 0].sample(5)[['sentence', 'label']]
+print(df.loc[df.label == 0].sample(5)[['sentence', 'label']])
 
 
 
@@ -107,7 +86,7 @@ for sent in sentences:
 print('Max sentence length: ', max_len)
 
 
-# Tokenize all of the sentences and map the tokens to thier word IDs.
+# Tokenize all of the sentences and map the tokens to their word IDs.
 input_ids = []
 attention_masks = []
 
@@ -188,7 +167,6 @@ validation_dataloader = DataLoader(
 
 # 4. Train Our Classification Model
 # 4.1. BertForSequenceClassification
-
 from transformers import BertForSequenceClassification, AdamW, BertConfig
 
 # Load BertForSequenceClassification, the pretrained BERT model with a single 
@@ -210,17 +188,14 @@ params = list(model.named_parameters())
 print('The BERT model has {:} different named parameters.\n'.format(len(params)))
 
 print('==== Embedding Layer ====\n')
-
 for p in params[0:5]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
 print('\n==== First Transformer ====\n')
-
 for p in params[5:21]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
 print('\n==== Output Layer ====\n')
-
 for p in params[-4:]:
     print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
@@ -250,7 +225,6 @@ scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_training_steps = total_steps)
 
 # 4.3. Training Loop
-
 import numpy as np
 
 # Function to calculate the accuracy of our predictions vs labels
@@ -264,9 +238,8 @@ import time
 import datetime
 
 def format_time(elapsed):
-    '''
-    Takes a time in seconds and returns a string hh:mm:ss
-    '''
+    
+    #Takes a time in seconds and returns a string hh:mm:ss
     # Round to the nearest second.
     elapsed_rounded = int(round((elapsed)))
     
@@ -496,7 +469,7 @@ plt.show()
 import pandas as pd
 
 # Load the dataset into a pandas dataframe.
-df = pd.read_csv("./cola_public/raw/out_of_domain_dev.tsv", delimiter='\t', header=None, names=['sentence_source', 'label', 'label_notes', 'sentence'])
+df = pd.read_csv("out_of_domain_dev.tsv", delimiter='\t', header=None, names=['sentence_source', 'label', 'label_notes', 'sentence'])
 
 # Report the number of sentences.
 print('Number of test sentences: {:,}\n'.format(df.shape[0]))
